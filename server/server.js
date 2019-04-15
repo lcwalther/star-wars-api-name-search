@@ -2,10 +2,6 @@ const express = require('express')
 const app = express()
 const fs = require('fs')
 
-// // Allow CORS
-// app.use(cors())
-
-// Middleware
 app.use(express.json())
 
 app.get('/search', (req, res) => {
