@@ -2,20 +2,27 @@ const express = require('express')
 const app = express()
 const fs = require('fs')
 
-app.get('/', (req, res) => {
-  res.send('star-wars-searches.txt')
-})
+// // Allow CORS
+// app.use(cors())
 
-fs.readFile('star-wars-searches.txt', function(err, buf) {
-  console.log(buf.toString())
-})
+// Middleware
+app.use(express.json())
 
-app.post('/', (req, res) => {
-  const data = req.body
-  fs.writeFile('star-wars-searches.txt', data, err => {
-    if (err) console.log(err)
-    console.log('Successfully Written to File.')
+app.get('/search', (req, res) => {
+  fs.readFile('./search-data.txt', function(err, buf) {
+    res.json(buf.toString())
   })
+})
+
+app.post('/search', (req, res) => {
+  const data = JSON.stringify(req.body)
+  const timestamp = new Date()
+  const searchResult = data + timestamp
+  const logStream = fs.createWriteStream('./search-data.txt', { flags: 'a' })
+  logStream.write(searchResult + '\n', () => {
+    logStream.end()
+  })
+  res.json(searchResult)
 })
 
 const port = process.env.PORT || 4000
